@@ -1,0 +1,5 @@
+{
+  "test_api.py::test_create_ticket": true,
+  "test_api.py::test_get_user_profile": true,
+  "test_api.py::test_grant_role_to_user": true
+}

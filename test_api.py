@@ -4,51 +4,252 @@ from utils import *
 
 
 
+
+
+class test_api():
+    def __init__(self):
+        self.title     = ""
+        self.purpose   = ""
+        self.test_pass = False
+        self.steps     = []
+    def add_step(self,step):
+        # step: list like: [step_purpose,step_pass,message]
+        self.steps.append({'step_purpose':step[0],'step_pass':step[1],'message':step[2]})
+    def get_test_result(self):
+        self.test_pass = True
+        for step in self.steps:
+            if not step['step_pass']:
+                self.test_pass = False
+        return self.test_pass
+    def __str__(self):
+        prt="+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        prt+= "title: "+self.title+"\n"
+        prt+="test pass: "+str(self.get_test_result())+"\n"
+        prt+= "purpose: "+self.purpose+"\n"
+        prt+="+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+        for step in self.steps:
+            prt+= "purpose: "+step['step_purpose']+"\n"
+            prt+= "step pass: "+str(step['step_pass'])+"\n"
+            prt+= "message: "+step['message']+"\n"
+            prt+="-----------------------------------------------------------\n"
+        return prt
+
 def test_register_user():
     """
     register random user and verify response
     """
+    test_reg_user = test_api()
+    test_reg_user.title = "Registe User API call"
+    test_reg_user.purpose = "Test the call response format"
+    #---------------------------------------------------------------------------
+    #                     initialise test
+    #--------------------------------------------------------------------------
     authAccountId = generate_random_string()+"@gmail.com"
     password      = generate_random_string(9)
     name          = generate_random_string()
     r=register_user(authAccountId,password,name,True)
-    assert len(json.loads(r.text).keys()) <= 2,"extrat fields present in the register user API call response"
-    assert "userId" in json.loads(r.text).keys(), "no userId in the register user API call response"
-    assert "sessionId" in json.loads(r.text).keys(),'no sessionId in register user API call response'
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that the response is in json format"
+    step_pass    = False
+    message = ""
+    try:
+        response = json.loads(r.text)
+        message  = str(r.text)
+        test_reg_user.add_step([step_purpose,True,message])
+    except ValueError:
+        message = str(r.text)
+        test_reg_user.add_step([step_purpose,False,message])
+        return test_reg_user
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that there is no extrat fields in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if len(response.keys())>2:
+        step_pass = False
+        message = "extrat fields present in the register user API call response: "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that userId present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("userId" in response.keys()):
+        test_pass = False
+        message   = "no userId in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that sessionId present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("sessionId" in response.keys()):
+        test_pass = False
+        message   = "no sessionId in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    return test_reg_user
+
+
+
 
 def test_authorize_set_cookies():
     """
     register a new user than authorize it using the authorize user API call
     and check the response
     """
+    test_reg_user = test_api()
+    test_reg_user.title = "authorize_set_cookies API call"
+    test_reg_user.purpose = "Test the call response format"
+    #---------------------------------------------------------------------------
+    #                     initialise test
+    #--------------------------------------------------------------------------
     authAccountId = generate_random_string()+"@gmail.com"
     password      = generate_random_string(9)
     name          = generate_random_string()
     register_user(authAccountId,password,name,False)
     r=authorize_set_cookies(authAccountId,password,True)
-    assert len(json.loads(r.text).keys()) <= 2,"extrat fields present in the register user API call response"
-    assert "userId" in json.loads(r.text).keys(), "no userId in the register user API call response"
-    assert "sessionId" in json.loads(r.text).keys(),'no sessionId in register user API call response'
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that the response is in json format"
+    step_pass    = False
+    message = ""
+    try:
+        response = json.loads(r.text)
+        message  = str(r.text)
+        test_reg_user.add_step([step_purpose,True,message])
+    except ValueError:
+        message = str(r.text)
+        test_reg_user.add_step([step_purpose,False,message])
+        return test_reg_user
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that there is no extrat fields in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if len(response.keys())>2:
+        step_pass = False
+        message = "extrat fields present in the register user API call response: "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that userId present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("userId" in response.keys()):
+        test_pass = False
+        message   = "no userId in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that sessionId present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("sessionId" in response.keys()):
+        test_pass = False
+        message   = "no sessionId in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    return test_reg_user
+
+
 
 def test_get_user_profile():
     """
     register a new user than get it's profile using the API call
     """
+    test_reg_user = test_api()
+    test_reg_user.title = "authorize_set_cookies API call"
+    test_reg_user.purpose = "Test the call response format"
+    #---------------------------------------------------------------------------
+    #                     initialise test
+    #--------------------------------------------------------------------------
     authAccountId = generate_random_string()+"@gmail.com"
     password      = generate_random_string(9)
     name          = generate_random_string()
     r=register_user(authAccountId,password,name,False)
     userId = json.loads(r.text)['userId']
     r=get_user_profile(userId)
-    assert 'id' in json.loads(r.text).keys() ,"no id in the get_user_profile API response"
-    assert 'accountId' in json.loads(r.text).keys(),"no accountId in the get_user_profile API response"
-    assert 'handle' in json.loads(r.text).keys(),"no handle in the get_user_profile API response"
-    assert 'fullName' in json.loads(r.text).keys(),"no fullName in the get_user_profile API response"
-    assert 'avatarId' in json.loads(r.text).keys(),"no avatarId in the get_user_profile API response"
-    assert 'about' in json.loads(r.text).keys(),"no about in the get_user_profile API response"
-    assert 'creationTime' in json.loads(r.text).keys(),"no creationTime in the get_user_profile API response"
-    assert 'roles' in json.loads(r.text).keys(),"no roles in the get_user_profile API response"
-    assert len(json.loads(r.text).keys()) <= 8,"extrat fields present in the get_user_profile API response"
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that the response is in json format"
+    step_pass    = False
+    message = ""
+    try:
+        response = json.loads(r.text)
+        message  = str(r.text)
+        step_pass = True
+        test_reg_user.add_step([step_purpose,step_pass,message])
+    except ValueError:
+        message = str(r.text)
+        test_reg_user.add_step([step_purpose,step_pass,message])
+        return test_reg_user
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that there is no extrat fields in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if len(response.keys())>8:
+        step_pass = False
+        message = "extrat fields present in the register user API call response: "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that id present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("id" in response.keys()):
+        step_pass = False
+        message   = "no id in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that accountId present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("accountId" in response.keys()):
+        step_pass = False
+        message   = "no accountId in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that handle present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("handle" in response.keys()):
+        step_pass = False
+        message   = "no handle in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that fullName present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("fullName" in response.keys()):
+        step_pass = False
+        message   = "no fullName in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that avatarId present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("avatarId" in response.keys()):
+        step_pass = False
+        message   = "no avatarId in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that about field present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("about" in response.keys()):
+        step_pass = False
+        message   = "no about in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that creationTime field present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("creationTime" in response.keys()):
+        test_pass = False
+        message   = "no creationTime in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    #---------------------------------------------------------------------------
+    step_purpose = "verify that roles field present in the response"
+    step_pass    = True
+    message = str(response.keys())
+    if not ("roles" in response.keys()):
+        test_pass = False
+        message   = "no roles in "+str(response.keys())
+    test_reg_user.add_step([step_purpose,step_pass,message])
+    return test_reg_user
+
+
+
 
 def test_grant_role_to_user():
     # create new user
@@ -67,54 +268,6 @@ def test_create_ticket():
     assert  'ticketId' in json.loads(r.text).keys(),"no roles in the get_user_profile API response"
 
 
-"""
-def test_isItBeforeSpecificWord():
-	assert isItBeforeSpecificWord("word","specificWord",["word","specificWord"])
-
-
-def test_isItAfterSpecificWord():
-	assert isItAfterSpecificWord("word","specificWord",["specificWord","word"]), "isItAfterSpecificWord function failed in positive test"
-	assert not isItAfterSpecificWord("word","specificWord",["notASpecificWord","word"]),"isItAfterSpecificWord function failed in negative test"
-
-
-def test_isItBeforeAwordThatStartsWithANumber():
-	assert isItBeforeAwordThatStartsWithANumber("word",["word","1startsWithIt"])
-	assert not isItBeforeAwordThatStartsWithANumber("word",["word","startsWithOut1"])
-
-
-def test_isItAfterAwordThatStartsWithANumber():
-	assert isItAfterAwordThatStartsWithANumber("word",["1startsWithIt","word"])
-	assert not isItAfterAwordThatStartsWithANumber("word",["word","startsWithOut1"])
-
-def test_isItSignificantWord():
-	assert isItSignificantWord("dog")
-	assert not isItSignificantWord("iplsg")
-
-def test_isItStartsWithANumber():
-	assert isItStartsWithANumber("1startwithANumber")
-	assert not isItStartsWithANumber("NotStartinwith1Number")
-
-def test_doesItContainANumber():
-	assert doesItContainANumber("h4tt")
-	assert not doesItContainANumber("NoNumber")
-
-def test_isItContainOneWord():
-	assert isItContainOneWord("word")
-	assert not isItContainOneWord("two words")
-
-def test_doesItStartsWithUpperCase():
-	assert doesItStartsWithUpperCase("Yes")
-	assert not doesItStartsWithUpperCase("no")
-
-def test_isItANoun():
-	assert isItANoun("door","open the door")
-	assert not isItANoun("open","open the door")
-
-def test_isItANAdj():
-	assert isItANAdj("good","good boy")
-	assert not isItANAdj("boy","good boy")
-
-def test_isItAVerb():
-	assert isItAVerb("go","go to the home")
-	assert not isItAVerb("home","go to the home")
-"""
+print test_register_user()
+print test_authorize_set_cookies()
+print test_get_user_profile()
